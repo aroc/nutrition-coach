@@ -1,5 +1,5 @@
 {
-  "name": "ai-nutrition-coach",
+  "name": "ai_nutrition_coach",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
