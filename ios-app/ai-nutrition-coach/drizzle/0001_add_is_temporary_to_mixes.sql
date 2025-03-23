@@ -1,0 +1,1 @@
+ALTER TABLE `mixes` ADD `is_temporary` integer DEFAULT false NOT NULL;
