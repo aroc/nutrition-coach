@@ -65,7 +65,10 @@ export const fetchUserGoals = async () => {
   setIsFetchingUserGoals(false);
 };
 
-export const fetchLoggedFoodItems = async (currentUser: User) => {
+export const fetchLoggedFoodItems = async () => {
+  const currentUser = useAppStore.getState().currentUser;
+  if (!currentUser) return;
+
   const existingLoggedFoodItems = await db.select().from(loggedFoodItemsTable);
   if (existingLoggedFoodItems.length > 0) {
     Logger.log(

@@ -9,7 +9,7 @@ export type InputProps = {
   onChangeText: (text: string) => void;
   className?: string;
   placeholder?: string;
-  type?: 'default' | 'email-address' | 'password';
+  type?: 'default' | 'email-address' | 'password' | 'numeric';
   required?: boolean;
   variant?: 'default' | 'large';
   showClear?: boolean;
@@ -28,6 +28,14 @@ const Input: React.FC<InputProps> = ({
 }) => {
   const handleClear = () => {
     onChangeText('');
+  };
+
+  const handleChange = (text: string) => {
+    if (type === 'numeric') {
+      // Remove any non-numeric characters
+      text = text.replace(/[^0-9]/g, '');
+    }
+    onChangeText(text);
   };
 
   const variantStyles = variant === 'large' ? styles.inputLarge : styles.inputDefault;
@@ -50,7 +58,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         placeholderTextColor={colorPalette.gray[400]}
         value={value}
-        onChangeText={onChangeText}
+        onChangeText={handleChange}
         multiline={false} // Prevents new lines
         numberOfLines={1} // Ensures it's a single line
         textAlignVertical="center"
@@ -60,7 +68,7 @@ const Input: React.FC<InputProps> = ({
           variantStyles,
           icon ? styles.inputWithIcon : null,
         ]}
-        keyboardType={type === 'email-address' ? 'email-address' : 'default'}
+        keyboardType={type === 'email-address' ? 'email-address' : type === 'numeric' ? 'number-pad' : 'default'}
         secureTextEntry={type === 'password'}
         autoCapitalize={type === 'email-address' ? 'none' : 'sentences'}
         returnKeyType="done"
@@ -87,7 +95,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colorPalette.zinc[900],
+    backgroundColor: colorPalette.zinc[200],
     borderRadius: spacing.sm,
     paddingHorizontal: spacing.md,
     height: 48,
@@ -95,7 +103,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: colorPalette.white,
+    color: colorPalette.gray[700],
     padding: 0,
     height: '100%',
     textAlignVertical: 'center',
@@ -109,7 +117,7 @@ const styles = StyleSheet.create({
   inputLarge: {
     ...text['2xl'],
     textAlign: 'center',
-    color: colorPalette.gray[50],
+    color: colorPalette.gray[400],
   },
   inputWithIcon: {
     marginLeft: 28,
@@ -124,7 +132,7 @@ const styles = StyleSheet.create({
   clearButton: {
     position: 'absolute',
     right: spacing.md,
-    backgroundColor: colorPalette.zinc[900],
+    backgroundColor: colorPalette.zinc[100],
     borderRadius: 999,
     padding: spacing.xs,
     width: 24,

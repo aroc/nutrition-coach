@@ -66,8 +66,8 @@ const uiStyles = StyleSheet.create({
   mainContent: {
     display: "flex",
     flexDirection: "column",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   // Add more styles as needed
 });

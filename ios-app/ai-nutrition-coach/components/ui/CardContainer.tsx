@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     borderRadius: 12,
-    backgroundColor: colorPalette.zinc[900],
+    backgroundColor: colorPalette.zinc[50],
   },
 });
 

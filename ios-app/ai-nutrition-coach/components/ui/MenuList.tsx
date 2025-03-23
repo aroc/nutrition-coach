@@ -62,16 +62,19 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 12,
     paddingHorizontal: 8,
-    backgroundColor: colorPalette.zinc[900],
+    backgroundColor: colorPalette.zinc[200],
   },
   divider: {
     width: '100%',
     height: 1,
-    backgroundColor: colorPalette.zinc[700],
+    backgroundColor: colorPalette.zinc[300],
     opacity: 0.7,
   },
   menuItem: {
     width: '100%',
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs * 3,
   },
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItemText: {
-    color: colorPalette.zinc[100],
+    color: colorPalette.zinc[700],
     flex: 1,
   },
   menuItemTextWithIcon: {

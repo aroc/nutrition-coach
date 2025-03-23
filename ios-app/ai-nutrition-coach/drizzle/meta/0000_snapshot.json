@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a88e6bad-3770-46a1-a2fc-4e03f062ef5b",
+  "id": "c230e728-66e9-4c63-8680-ba534349c5ce",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "audio_files": {
-      "name": "audio_files",
+    "logged_food_items": {
+      "name": "logged_food_items",
       "columns": {
         "id": {
           "name": "id",
@@ -14,29 +14,85 @@
           "notNull": true,
           "autoincrement": false
         },
-        "user_prompt": {
-          "name": "user_prompt",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "file_name": {
-          "name": "file_name",
-          "type": "text",
+        "calories": {
+          "name": "calories",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "protein_grams": {
+          "name": "protein_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fat_grams": {
+          "name": "fat_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fat_saturated_grams": {
+          "name": "fat_saturated_grams",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "file_url": {
-          "name": "file_url",
-          "type": "text",
+        "fat_monounsaturated_grams": {
+          "name": "fat_monounsaturated_grams",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "file_type": {
-          "name": "file_type",
+        "fat_polyunsaturated_grams": {
+          "name": "fat_polyunsaturated_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carbs_grams": {
+          "name": "carbs_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "carbs_fiber_grams": {
+          "name": "carbs_fiber_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carbs_sugar_grams": {
+          "name": "carbs_sugar_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "meal_type": {
+          "name": "meal_type",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -65,8 +121,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mixes": {
-      "name": "mixes",
+    "user_goals": {
+      "name": "user_goals",
       "columns": {
         "id": {
           "name": "id",
@@ -75,20 +131,82 @@
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "audio_files": {
-          "name": "audio_files",
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "calories": {
+          "name": "calories",
+          "type": "integer",
+          "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
+          "autoincrement": false
+        },
+        "protein_grams": {
+          "name": "protein_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fat_grams": {
+          "name": "fat_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fat_saturated_grams": {
+          "name": "fat_saturated_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fat_monounsaturated_grams": {
+          "name": "fat_monounsaturated_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fat_polyunsaturated_grams": {
+          "name": "fat_polyunsaturated_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carbs_grams": {
+          "name": "carbs_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "carbs_fiber_grams": {
+          "name": "carbs_fiber_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carbs_sugar_grams": {
+          "name": "carbs_sugar_grams",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",

@@ -11,7 +11,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAppStore } from '@/state/store';
 import { getUser } from '@/lib/auth-utils';
-import { fetchUserAudioFiles, fetchUserMixes } from '@/lib/api-fetch';
+import { fetchUserGoals, fetchLoggedFoodItems } from '@/lib/api-fetch';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from '../drizzle/migrations';
 import db from '@/db/db';
@@ -48,8 +48,8 @@ export default function RootLayout() {
   useEffect(() => {
     if (!currentUser) return;
 
-    fetchUserAudioFiles();
-    fetchUserMixes();
+    fetchUserGoals();
+    fetchLoggedFoodItems();
   }, [currentUser]);
 
   const { success, error } = useMigrations(db, migrations);
@@ -90,13 +90,13 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
-          {/* <Stack.Screen
-            name="create-mix-modal"
+          <Stack.Screen
+            name="set-goals-modal"
             options={{
-              presentation: 'modal',
+              presentation: 'fullScreenModal',
               headerShown: false,
             }}
-          /> */}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

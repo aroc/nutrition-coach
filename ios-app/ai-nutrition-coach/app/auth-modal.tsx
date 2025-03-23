@@ -114,7 +114,6 @@ export default function AuthModal() {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: colorPalette.slate[950],
   },
   modalContent: {
     flex: 1,

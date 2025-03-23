@@ -107,7 +107,9 @@ export default function SettingsScreen() {
       <ScrollView style={[
         uiStyles.mainContent,
       ]}>
-        <View style={styles.container}>
+        <View style={[
+          styles.container,
+        ]}>
           <ThemedText type="title">Settings</ThemedText>
           {userEmail && (
             <CardContainer paddingSize="small" contentAlign="flex-start">
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.md,
-    flex: 1,
   },
   accountLabel: {
     paddingBottom: 0,
