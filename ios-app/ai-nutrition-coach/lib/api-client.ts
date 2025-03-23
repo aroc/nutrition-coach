@@ -1,10 +1,9 @@
-import { User } from "../types";
+import { User } from "../types/index";
 import Logger from "./Logger";
 import { useAppStore } from "../state/store";
 
-// const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-const API_BASE_URL = "https://smoothnoise-production.up.railway.app";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+// const API_BASE_URL = "https://ainutritioncoach-production.up.railway.app";
 
 export const apiFetch = async (
   path: string,

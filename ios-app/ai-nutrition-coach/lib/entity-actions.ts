@@ -1,258 +1,172 @@
 import * as Crypto from "expo-crypto";
-import { AudioFile, Mix, AudioFileMixEntry } from "@/types/index";
-import Logger from "./Logger";
-import { useAppStore } from "../state/store";
 import db from "@/db/db";
-import { mixes } from "@/db/schema";
+import { loggedFoodItems, userGoals } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { stopPlayingMix } from "./audio-manager-utils";
-import getAudioManagerInstance from "./AudioManagerSingleton";
+import Logger from "./Logger";
 
-export const deleteMix = async (mixId: Mix["id"]): Promise<boolean> => {
-  if (!mixId) return false;
-  const { nowPlayingMix, isPlaying, setNowPlayingMix } = useAppStore.getState();
+export type LoggedFoodItem = typeof loggedFoodItems.$inferSelect;
+export type NewLoggedFoodItem = typeof loggedFoodItems.$inferInsert;
 
-  const thisMixIsNowPlaying = nowPlayingMix?.id === mixId;
+export type UserGoals = typeof userGoals.$inferSelect;
+export type NewUserGoals = typeof userGoals.$inferInsert;
 
-  if (thisMixIsNowPlaying && isPlaying) {
-    await stopPlayingMix();
-  }
-
-  // Delete from SQLite db
+// Food Logging CRUD Operations
+export const createLoggedFoodItem = async (
+  foodItem: Omit<NewLoggedFoodItem, "id" | "createdAt" | "updatedAt">
+): Promise<LoggedFoodItem> => {
   try {
-    await db.delete(mixes).where(eq(mixes.id, mixId));
-    Logger.log("Deleted mix from local db", mixId);
-
-    if (thisMixIsNowPlaying) {
-      setNowPlayingMix(null);
-    }
-
-    return true;
-  } catch (error) {
-    Logger.error("Error deleting mix from local db:", error);
-    throw error;
-  }
-};
-
-export const updateMixAudioFile = async (
-  mixId: Mix["id"],
-  audioFileId: AudioFile["id"],
-  updates: Partial<AudioFile>
-) => {
-  try {
-    const { nowPlayingMix, setNowPlayingMix } = useAppStore.getState();
-    const mix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, mixId),
-    });
-
-    if (!mix) throw new Error(`Mix not found with id ${mixId}`);
-
-    const matchingAudioFile = mix.audioFiles.find(
-      (audioFile) => audioFile.id === audioFileId
-    );
-    if (!matchingAudioFile)
-      throw new Error(`Audio file not found with id ${audioFileId}`);
-
-    const updatedAudioFiles = mix.audioFiles.map((audioFileItem) =>
-      audioFileItem.id === audioFileId
-        ? { ...audioFileItem, ...updates }
-        : audioFileItem
-    );
-
-    await db
-      .update(mixes)
-      .set({ audioFiles: updatedAudioFiles })
-      .where(eq(mixes.id, mixId));
-
-    // if this mix is currently active, update the volume of the file
-    // Only change the volume if it's the currently playing mix
-    const audioManager = getAudioManagerInstance();
-
-    if (audioManager && audioManager.mixId === mixId && updates.volume) {
-      await audioManager.changeVolume(matchingAudioFile, updates.volume);
-    }
-
-    if (nowPlayingMix?.id === mixId) {
-      // fetch the updated mix from the db
-      const updatedMix = await db.query.mixes.findFirst({
-        where: eq(mixes.id, mixId),
-      });
-      if (!updatedMix) throw new Error(`Mix not found with id ${mixId}`);
-      setNowPlayingMix(updatedMix);
-    }
-  } catch (error) {
-    Logger.error("Error updating mix audio file:", error);
-    throw error;
-  }
-};
-
-export const removeAudioFileFromMix = async (
-  mixId: Mix["id"],
-  audioFileId: AudioFile["id"]
-) => {
-  try {
-    const { nowPlayingMix, setNowPlayingMix } = useAppStore.getState();
-
-    const mix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, mixId),
-    });
-
-    if (!mix) throw new Error(`Mix not found with id ${mixId}`);
-
-    const matchedAudioFile = mix.audioFiles.find(
-      (audioFile) => audioFile.id === audioFileId
-    );
-
-    if (!matchedAudioFile)
-      throw new Error(`Audio file not found with id ${audioFileId}`);
-
-    const updatedAudioFiles = mix.audioFiles.filter(
-      (audioFile) => audioFile.id !== audioFileId
-    );
-
-    await db
-      .update(mixes)
-      .set({ audioFiles: updatedAudioFiles })
-      .where(eq(mixes.id, mixId));
-
-    // Stop playing the removed audio file if it's currently playing
-    const audioManager = getAudioManagerInstance();
-    if (audioManager && audioManager.mixId === mixId) {
-      await audioManager.stopFile(matchedAudioFile);
-      await audioManager.removeFile(matchedAudioFile);
-    }
-
-    if (nowPlayingMix?.id === mixId) {
-      // fetch the updated mix from the db
-      const updatedMix = await db.query.mixes.findFirst({
-        where: eq(mixes.id, mixId),
-      });
-      if (!updatedMix) throw new Error(`Mix not found with id ${mixId}`);
-      setNowPlayingMix(updatedMix);
-    }
-  } catch (error) {
-    Logger.error("Error removing audio file from mix:", error);
-    throw error;
-  }
-};
-
-export const addAudioFileToMix = async (
-  mixId: Mix["id"],
-  audioFile: AudioFile,
-  volume: number = 1
-): Promise<Mix | undefined> => {
-  try {
-    const { nowPlayingMix, isPlaying } = useAppStore.getState();
-
-    const mix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, mixId),
-    });
-
-    if (!mix) throw new Error(`Mix not found with id ${mixId}`);
-
-    const audioFileEntry: AudioFileMixEntry = {
-      ...audioFile,
-      volume,
-    };
-
-    const updatedAudioFiles = [...mix.audioFiles, audioFileEntry];
-
-    await db
-      .update(mixes)
-      .set({ audioFiles: updatedAudioFiles })
-      .where(eq(mixes.id, mixId));
-
-    // if the now playuing mix is the one we just updated, update audio manager
-    if (nowPlayingMix?.id === mixId) {
-      const audioManager = getAudioManagerInstance();
-
-      if (isPlaying) {
-        // will also add the file to the audio manager
-        await audioManager.playFile(audioFileEntry);
-      } else {
-        await audioManager.addFile(audioFileEntry);
-      }
-    }
-
-    // fetch the updated mix from the db
-    const updatedMix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, mixId),
-    });
-
-    if (!updatedMix) throw new Error(`Mix not found with id ${mixId}`);
-
-    return updatedMix;
-  } catch (error) {
-    Logger.error("Error adding audio file to mix:", error);
-    throw error;
-  }
-};
-
-export const createMix = async ({
-  name,
-  audioFiles,
-  isTemporary = false,
-  setMixAsNowPlayingAfterCreate = false,
-}: {
-  name: string;
-  audioFiles: AudioFileMixEntry[];
-  isTemporary?: boolean;
-  setMixAsNowPlayingAfterCreate?: boolean;
-}): Promise<Mix | undefined> => {
-  try {
-    const { setNowPlayingMix } = useAppStore.getState();
-
-    const newMixInsertValues = {
+    const newFoodItemValues = {
       id: Crypto.randomUUID(),
-      name,
+      ...foodItem,
       createdAt: new Date(),
       updatedAt: new Date(),
-      audioFiles,
-      isTemporary,
     };
 
-    await db.insert(mixes).values(newMixInsertValues);
+    await db.insert(loggedFoodItems).values(newFoodItemValues);
 
-    const newMix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, newMixInsertValues.id),
+    const newFoodItem = await db.query.loggedFoodItems.findFirst({
+      where: eq(loggedFoodItems.id, newFoodItemValues.id),
     });
 
-    if (!newMix) throw new Error("Failed to create mix");
-
-    if (setMixAsNowPlayingAfterCreate) {
-      setNowPlayingMix(newMix);
-    }
-
-    return newMix;
+    if (!newFoodItem) throw new Error("Failed to create food item");
+    return newFoodItem;
   } catch (error) {
-    Logger.error("Error creating mix:", error);
+    Logger.error("Error creating food item:", error);
     throw error;
   }
 };
 
-export const updateMix = async (
-  mixId: string,
-  { name, isTemporary }: { name?: string; isTemporary?: boolean }
-): Promise<Mix | undefined> => {
+export const updateLoggedFoodItem = async (
+  foodItemId: string,
+  updates: Partial<Omit<NewLoggedFoodItem, "id" | "createdAt" | "updatedAt">>
+): Promise<LoggedFoodItem> => {
   try {
     await db
-      .update(mixes)
+      .update(loggedFoodItems)
       .set({
-        name,
-        isTemporary,
+        ...updates,
         updatedAt: new Date(),
       })
-      .where(eq(mixes.id, mixId));
+      .where(eq(loggedFoodItems.id, foodItemId));
 
-    const updatedMix = await db.query.mixes.findFirst({
-      where: eq(mixes.id, mixId),
+    const updatedFoodItem = await db.query.loggedFoodItems.findFirst({
+      where: eq(loggedFoodItems.id, foodItemId),
     });
 
-    if (!updatedMix) throw new Error(`Mix not found with id ${mixId}`);
-
-    return updatedMix;
+    if (!updatedFoodItem)
+      throw new Error(`Food item not found with id ${foodItemId}`);
+    return updatedFoodItem;
   } catch (error) {
-    Logger.error("Error updating mix:", error);
+    Logger.error("Error updating food item:", error);
+    throw error;
+  }
+};
+
+export const deleteLoggedFoodItem = async (
+  foodItemId: string
+): Promise<boolean> => {
+  if (!foodItemId) return false;
+
+  try {
+    await db.delete(loggedFoodItems).where(eq(loggedFoodItems.id, foodItemId));
+    Logger.log("Deleted food item from local db", foodItemId);
+    return true;
+  } catch (error) {
+    Logger.error("Error deleting food item from local db:", error);
+    throw error;
+  }
+};
+
+export const getLoggedFoodItems = async (
+  userId: string
+): Promise<LoggedFoodItem[]> => {
+  try {
+    const items = await db.query.loggedFoodItems.findMany({
+      where: eq(loggedFoodItems.userId, userId),
+      orderBy: (loggedFoodItems, { desc }) => [desc(loggedFoodItems.createdAt)],
+    });
+    return items;
+  } catch (error) {
+    Logger.error("Error fetching food items:", error);
+    throw error;
+  }
+};
+
+// User Goals CRUD Operations
+export const createUserGoals = async (
+  goals: Omit<NewUserGoals, "id" | "createdAt" | "updatedAt">
+): Promise<UserGoals> => {
+  try {
+    const newGoalsValues = {
+      id: Crypto.randomUUID(),
+      ...goals,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await db.insert(userGoals).values(newGoalsValues);
+
+    const newGoals = await db.query.userGoals.findFirst({
+      where: eq(userGoals.id, newGoalsValues.id),
+    });
+
+    if (!newGoals) throw new Error("Failed to create user goals");
+    return newGoals;
+  } catch (error) {
+    Logger.error("Error creating user goals:", error);
+    throw error;
+  }
+};
+
+export const updateUserGoals = async (
+  goalsId: string,
+  updates: Partial<Omit<NewUserGoals, "id" | "createdAt" | "updatedAt">>
+): Promise<UserGoals> => {
+  try {
+    await db
+      .update(userGoals)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(userGoals.id, goalsId));
+
+    const updatedGoals = await db.query.userGoals.findFirst({
+      where: eq(userGoals.id, goalsId),
+    });
+
+    if (!updatedGoals)
+      throw new Error(`User goals not found with id ${goalsId}`);
+    return updatedGoals;
+  } catch (error) {
+    Logger.error("Error updating user goals:", error);
+    throw error;
+  }
+};
+
+export const deleteUserGoals = async (goalsId: string): Promise<boolean> => {
+  if (!goalsId) return false;
+
+  try {
+    await db.delete(userGoals).where(eq(userGoals.id, goalsId));
+    Logger.log("Deleted user goals from local db", goalsId);
+    return true;
+  } catch (error) {
+    Logger.error("Error deleting user goals from local db:", error);
+    throw error;
+  }
+};
+
+export const getUserGoals = async (
+  userId: string
+): Promise<UserGoals | undefined> => {
+  try {
+    const goals = await db.query.userGoals.findFirst({
+      where: eq(userGoals.userId, userId),
+    });
+    return goals;
+  } catch (error) {
+    Logger.error("Error fetching user goals:", error);
     throw error;
   }
 };

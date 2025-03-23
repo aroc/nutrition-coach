@@ -21,22 +21,22 @@ export default class LoggedFoodItem extends BaseModel {
   declare fat_grams: number
 
   @column()
-  declare fat_grams_saturated: number
+  declare fat_saturated_grams: number
 
   @column()
-  declare fat_monounsaturated: number
+  declare fat_monounsaturated_grams: number
 
   @column()
-  declare fat_polyunsaturated: number
+  declare fat_polyunsaturated_grams: number
 
   @column()
-  declare carbs: number
+  declare carbs_grams: number
 
   @column()
-  declare carbs_fiber: number
+  declare carbs_fiber_grams: number
 
   @column()
-  declare carbs_sugar: number
+  declare carbs_sugar_grams: number
 
   @column()
   declare meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack'

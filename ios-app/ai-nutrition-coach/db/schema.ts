@@ -1,6 +1,5 @@
 import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { AudioFileMixEntry } from "@/types/index";
 
 const id = text("id").primaryKey();
 
@@ -13,25 +12,31 @@ const timestamps = {
     .default(sql`CURRENT_TIMESTAMP`),
 };
 
-export const mixes = sqliteTable("mixes", {
+const nutritionFields = {
+  calories: integer("calories").notNull(),
+  protein_grams: integer("protein_grams").notNull(),
+  fat_grams: integer("fat_grams").notNull(),
+  fat_saturated_grams: integer("fat_saturated_grams"),
+  fat_monounsaturated_grams: integer("fat_monounsaturated_grams"),
+  fat_polyunsaturated_grams: integer("fat_polyunsaturated_grams"),
+  carbs_grams: integer("carbs_grams").notNull(),
+  carbs_fiber_grams: integer("carbs_fiber_grams"),
+  carbs_sugar_grams: integer("carbs_sugar_grams"),
+};
+
+export const loggedFoodItems = sqliteTable("logged_food_items", {
   id,
-  name: text("name").notNull(),
-  isTemporary: integer("is_temporary", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  // Store serialized array of AudioFileEntry objects
-  audioFiles: text("audio_files", { mode: "json" })
-    .$type<AudioFileMixEntry[]>()
-    .notNull()
-    .default(sql`'[]'`),
+  userId: text("user_id").notNull(),
+  description: text("description"),
+  ...nutritionFields,
+  meal_type: text("meal_type"),
   ...timestamps,
 });
 
-export const audioFiles = sqliteTable("audio_files", {
+export const userGoals = sqliteTable("user_goals", {
   id,
-  userPrompt: text("user_prompt"),
-  fileName: text("file_name"),
-  fileUrl: text("file_url"),
-  fileType: text("file_type"),
+  userId: text("user_id").notNull(),
+  description: text("description"),
+  ...nutritionFields,
   ...timestamps,
 });

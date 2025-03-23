@@ -7,15 +7,13 @@ import { colorPalette } from '@/constants/Colors';
 import LogoImage from '@/assets/images/logo/Logo_Isolated_2x.png';
 import db from '@/db/db';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
-import { mixes as mixesTable } from '@/db/schema';
+import { userGoals as userGoalsTable, loggedFoodItems as loggedFoodItemsTable } from '@/db/schema';
 import { useRouter } from 'expo-router';
-import SunsetSunriseMessage from '@/components/SunsetSunriseMessage';
 
 export default function HomeScreen() {
-  const { data } = useLiveQuery(db.select().from(mixesTable));
-  const mixes = data || [];
-
   const router = useRouter();
+  const { data: userGoals } = useLiveQuery(db.select().from(userGoalsTable));
+  const { data: loggedFoodItems } = useLiveQuery(db.select().from(loggedFoodItemsTable));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

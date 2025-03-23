@@ -90,13 +90,13 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="create-mix-modal"
             options={{
               presentation: 'modal',
               headerShown: false,
             }}
-          />
+          /> */}
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
