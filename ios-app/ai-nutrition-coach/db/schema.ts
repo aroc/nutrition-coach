@@ -40,3 +40,11 @@ export const userGoals = sqliteTable("user_goals", {
   ...nutritionFields,
   ...timestamps,
 });
+
+export const userChatMessages = sqliteTable("user_chat_messages", {
+  id,
+  userId: text("user_id"),
+  message: text("message").notNull(),
+  isAssistant: integer("is_assistant", { mode: "boolean" }).default(false),
+  ...timestamps,
+});

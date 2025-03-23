@@ -8,6 +8,13 @@
       "when": 1742747370007,
       "tag": "0000_legal_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1742751774056,
+      "tag": "0001_complete_la_nuit",
+      "breakpoints": true
     }
   ]
 }

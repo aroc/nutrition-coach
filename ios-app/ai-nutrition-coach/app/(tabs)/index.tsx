@@ -6,6 +6,8 @@ import Button from '@/components/Button';
 import { spacing, uiStyles } from '@/constants/Styles';
 import { colorPalette } from '@/constants/Colors';
 import LogoImage from '@/assets/images/logo/Logo_Isolated_2x.png';
+import { deleteUserGoals } from '@/lib/entity-actions';
+import { useAppStore } from '@/state/store';
 import db from '@/db/db';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import CardContainer from '@/components/ui/CardContainer';
@@ -85,6 +87,7 @@ function Goal({ label, current, target, color = colorPalette.sky[500] }: GoalPro
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { currentUser } = useAppStore.getState();
   const { data: userGoals } = useLiveQuery(db.select().from(userGoalsTable));
   const goals = userGoals?.[0];
 

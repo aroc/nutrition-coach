@@ -11,7 +11,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAppStore } from '@/state/store';
 import { getUser } from '@/lib/auth-utils';
-import { fetchUserGoals, fetchLoggedFoodItems } from '@/lib/api-fetch';
+import { fetchUserGoals, fetchLoggedFoodItems, fetchChatMessages } from '@/lib/api-fetch';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from '../drizzle/migrations';
 import db from '@/db/db';
@@ -50,6 +50,7 @@ export default function RootLayout() {
 
     fetchUserGoals();
     fetchLoggedFoodItems();
+    fetchChatMessages();
   }, [currentUser]);
 
   const { success, error } = useMigrations(db, migrations);
@@ -92,6 +93,13 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="set-goals-modal"
+            options={{
+              presentation: 'fullScreenModal',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="nutrition-assistant-modal"
             options={{
               presentation: 'fullScreenModal',
               headerShown: false,

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { User, ChatMessage } from "../types/index";
+import { User } from "../types/index";
 
 export type AppStore = {
   // User
@@ -18,8 +18,8 @@ export type AppStore = {
   setIsFetchingLoggedFoodItems: (isFetchingLoggedFoodItems: boolean) => void;
 
   // Chat messages
-  chatMessages: ChatMessage[];
-  setChatMessages: (messages: ChatMessage[]) => void;
+  isFetchingChatMessages: boolean;
+  setIsFetchingChatMessages: (isFetchingChatMessages: boolean) => void;
 };
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -44,6 +44,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set({ isFetchingLoggedFoodItems }),
 
   // Chat messages
-  chatMessages: [],
-  setChatMessages: (messages: ChatMessage[]) => set({ chatMessages: messages }),
+  isFetchingChatMessages: false,
+  setIsFetchingChatMessages: (isFetchingChatMessages: boolean) =>
+    set({ isFetchingChatMessages }),
 }));

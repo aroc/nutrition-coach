@@ -1,6 +1,6 @@
 import { router, Tabs, useRouter } from 'expo-router';
 import React, { useRef } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, TouchableOpacity } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import PikaHomeDefault from '@/components/icons/pika/solid/home-default';
 import PikaUserDefault from '@/components/icons/pika/solid/user-default';
@@ -9,6 +9,21 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAppStore } from '@/state/store';
+
+const AssistantButton = ({ color }: { color: string }) => (
+  <View
+    style={{
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: '#34D399',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 32,
+    }}>
+    <PikaNotebook color="white" />
+  </View>
+);
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -47,18 +62,19 @@ export default function TabLayout() {
             ),
           }}
         />
-        {/* Turn into button to open chat with assistant */}
-        {/* <Tabs.Screen
-          name="library"
-          options={{
-            title: 'Library',
-            tabBarIcon: ({ color }) => (
-              <PikaNotebook
-                color={color}
-              />
-            ),
+        <Tabs.Screen
+          name="assistant"
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              router.push('/nutrition-assistant-modal');
+            },
           }}
-        /> */}
+          options={{
+            title: 'Assistant',
+            tabBarIcon: ({ color }) => <AssistantButton color={color} />,
+          }}
+        />
         <Tabs.Screen
           name="settings"
           options={{

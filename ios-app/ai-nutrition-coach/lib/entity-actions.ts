@@ -144,12 +144,12 @@ export const updateUserGoals = async (
   }
 };
 
-export const deleteUserGoals = async (goalsId: string): Promise<boolean> => {
-  if (!goalsId) return false;
+export const deleteUserGoals = async (userId: string): Promise<boolean> => {
+  if (!userId) return false;
 
   try {
-    await db.delete(userGoals).where(eq(userGoals.id, goalsId));
-    Logger.log("Deleted user goals from local db", goalsId);
+    await db.delete(userGoals).where(eq(userGoals.userId, userId));
+    Logger.log("Deleted all user goals from local db for user", userId);
     return true;
   } catch (error) {
     Logger.error("Error deleting user goals from local db:", error);

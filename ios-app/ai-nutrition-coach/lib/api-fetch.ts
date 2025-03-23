@@ -7,6 +7,7 @@ import db from "@/db/db";
 import {
   userGoals as userGoalsTable,
   loggedFoodItems as loggedFoodItemsTable,
+  userChatMessages,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -123,6 +124,62 @@ export const fetchLoggedFoodItems = async () => {
   }
 
   setIsFetchingLoggedFoodItems(false);
+};
+
+export const fetchChatMessages = async () => {
+  const currentUser = useAppStore.getState().currentUser;
+  if (!currentUser) return;
+
+  if (!currentUser) {
+    Logger.log("no current user, skipping fetch chat messages");
+    return;
+  }
+
+  const { setIsFetchingChatMessages } = useAppStore.getState();
+  setIsFetchingChatMessages(true);
+
+  Logger.log("fetching chat messages", currentUser);
+
+  try {
+    const response = await apiFetch("/chat_messages", {
+      currentUser,
+    });
+
+    if (response.status === 500) {
+      Logger.error("Server error while fetching chat messages");
+      setIsFetchingChatMessages(false);
+      return;
+    }
+
+    const data = await response.json();
+    Logger.log("chat messages", JSON.stringify(data));
+
+    // Set the chat messages in the sqlite db
+    if (data) {
+      for (const message of data) {
+        // Check if message already exists
+        const existingMessage = await db
+          .select()
+          .from(userChatMessages)
+          .where(eq(userChatMessages.id, message.id));
+        if (existingMessage.length === 0) {
+          Logger.log("inserting chat message", message);
+          await db.insert(userChatMessages).values(message);
+        } else {
+          Logger.log(
+            "chat message already exists, skipping insert",
+            message.id
+          );
+        }
+      }
+    }
+  } catch (error) {
+    Logger.error("Error fetching chat messages:", error);
+    setIsFetchingChatMessages(false);
+    throw error;
+  }
+
+  setIsFetchingChatMessages(false);
 };
 
 export const submitLogin = async (email: string, password: string) => {
