@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "smooth-noise",
-    "slug": "smooth-noise",
+    "name": "ai-nutrition-coach",
+    "slug": "ai-nutrition-coach",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/AppIcon1x_1024x1024.png",
@@ -11,7 +11,7 @@
     "ios": {
       "usesAppleSignIn": true,
       "supportsTablet": true,
-      "bundleIdentifier": "co.optimismlabs.smoothnoise",
+      "bundleIdentifier": "co.optimismlabs.ai-nutrition-coach",
       "appleTeamId": "GFFUJNB8K5",
       "infoPlist": {
         "UIBackgroundModes": [
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.smoothnoise"
+      "package": "com.anonymous.ai-nutrition-coach"
     },
     "web": {
       "bundler": "metro",

@@ -8,15 +8,10 @@ export default function TabBarBackground() {
     <BlurView
       // System chrome material automatically adapts to the system's theme
       // and matches the native tab bar appearance on iOS.
-      tint="dark"
+      tint="light"
       // intensity={60}
       intensity={0} // 0 = transparent
-      style={[
-        StyleSheet.absoluteFill,
-        {
-          backgroundColor: 'rgba(0,0,0,0.3)',
-        }
-      ]}
+      style={StyleSheet.absoluteFill}
     />
   );
 }

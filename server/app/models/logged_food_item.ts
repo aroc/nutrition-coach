@@ -38,6 +38,9 @@ export default class LoggedFoodItem extends BaseModel {
   @column()
   declare carbs_sugar: number
 
+  @column()
+  declare meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

@@ -19,7 +19,7 @@ import db from '@/db/db';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-Appearance.setColorScheme('dark'); // Forces dark mode globally
+Appearance.setColorScheme('light'); // Forces dark mode globally
 
 export default function RootLayout() {
   const router = useRouter();

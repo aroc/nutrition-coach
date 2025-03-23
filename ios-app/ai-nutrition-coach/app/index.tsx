@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: spacing.md,
     paddingBottom: spacing.xl,
-    backgroundColor: colorPalette.slate[950],
   },
   logoContainer: {
     flex: 1,
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...text.lg,
-    color: colorPalette.gray[400],
     marginBottom: spacing.xl,
   },
   buttonContainer: {

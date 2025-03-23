@@ -60,8 +60,8 @@ const uiStyles = StyleSheet.create({
     flexDirection: "row",
   },
   mainContentPadding: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   mainContent: {
     display: "flex",

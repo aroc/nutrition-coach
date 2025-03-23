@@ -22,21 +22,26 @@ export default function HomeScreen() {
       <ScrollView>
         <View style={[
           uiStyles.mainContentPadding,
-          styles.header,
+          styles.container
         ]}>
-          <View style={styles.headerAppName}>
-            <Image source={LogoImage} style={styles.logoIcon} />
-            <ThemedText style={styles.appTitle}>Smooth Noise</ThemedText>
+          <View style={styles.header}>
+            <View style={styles.headerAppName}>
+              <Image source={LogoImage} style={styles.logoIcon} />
+              <ThemedText style={styles.appTitle}>Nutrition Pal</ThemedText>
+            </View>
           </View>
-          <SunsetSunriseMessage />
-        </View>
-        {/* <View style={styles.section}>
-          <ThemedText type="subtitle">Get Started</ThemedText>
-        </View>
-        <View style={styles.section}>
-          <ThemedText type="subtitle">Jump back in</ThemedText>
-        </View> */}
-        <View style={[
+          <View style={styles.section}>
+            <ThemedText type="subtitle" centered>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</ThemedText>
+          </View>
+          <View style={styles.section}>
+            <ThemedText type="subtitle">Daily Goal</ThemedText>
+            <ThemedText>daily goal here...</ThemedText>
+          </View>
+          <View style={styles.section}>
+            <ThemedText type="subtitle">Today's log</ThemedText>
+            <ThemedText>today's log here...</ThemedText>
+          </View>
+          {/* <View style={[
           styles.section,
         ]}>
           <View style={[
@@ -49,6 +54,7 @@ export default function HomeScreen() {
             <ThemedText muted>Mixes with the soothing sounds of nature</ThemedText>
           </View>
 
+        </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -59,14 +65,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: spacing.lg,
   },
   header: {
-    paddingHorizontal: spacing.md,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     gap: 10,
-    marginBottom: spacing.xl,
   },
   headerAppName: {
     flexDirection: 'row',
@@ -80,7 +88,6 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: colorPalette.zinc[200],
   },
   section: {
     flexDirection: 'column',

@@ -1,28 +1,30 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
-// import { useThemeColor } from '@/hooks/useThemeColor';
 import { colorPalette } from '@/constants/Colors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | "small";
   muted?: boolean;
+  centered?: boolean;
 };
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
+  lightColor = colorPalette.zinc[800],
+  darkColor = colorPalette.zinc[200],
   type = 'default',
   muted = false,
+  centered = false,
   ...rest
 }: ThemedTextProps) {
-  // const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   return (
     <Text
       style={[
-        { color: colorPalette.zinc[300] },
+        { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -30,6 +32,7 @@ export function ThemedText({
         type === 'link' ? styles.link : undefined,
         type === 'small' ? styles.small : undefined,
         muted ? styles.muted : undefined,
+        centered ? styles.centered : undefined,
         style,
       ]}
       {...rest}
@@ -67,5 +70,8 @@ const styles = StyleSheet.create({
   small: {
     fontSize: 14,
     lineHeight: 18,
+  },
+  centered: {
+    textAlign: 'center',
   },
 });
