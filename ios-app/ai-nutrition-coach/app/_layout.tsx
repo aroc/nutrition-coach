@@ -91,22 +91,7 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
-            name="now-playing-modal"
-            options={{
-              // presentation: 'modal',
-              presentation: 'fullScreenModal',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
             name="create-mix-modal"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="edit-mix-modal"
             options={{
               presentation: 'modal',
               headerShown: false,

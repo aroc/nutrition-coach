@@ -8,13 +8,11 @@ import PikaNotebook from '@/components/icons/pika/solid/notebook';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { NowPlayingBar } from '@/components/NowPlayingBar';
 import { useAppStore } from '@/state/store';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
-  const { nowPlayingMix } = useAppStore();
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
@@ -49,7 +47,8 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
+        {/* Turn into button to open chat with assistant */}
+        {/* <Tabs.Screen
           name="library"
           options={{
             title: 'Library',
@@ -59,7 +58,7 @@ export default function TabLayout() {
               />
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="settings"
           options={{
@@ -72,16 +71,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-
-      <NowPlayingBar
-        visible={nowPlayingMix !== null}
-        onPlayPausePress={() => {
-          // TODO: Implement play/pause logic
-        }}
-        onBarPress={() => {
-          router.push('/now-playing-modal');
-        }}
-      />
     </View>
   );
 }

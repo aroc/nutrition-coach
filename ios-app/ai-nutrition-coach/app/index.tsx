@@ -36,10 +36,10 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <ThemedText type="title" style={styles.title}>
-          Smooth Noise
+          Nutrition Pal
         </ThemedText>
         <ThemedText style={styles.subtitle}>
-          Sleep, relax and focus smoothly
+          Your motivational nutrition coach
         </ThemedText>
       </View>
 

@@ -5,60 +5,17 @@ import { ThemedText } from '@/components/ThemedText';
 import { spacing, uiStyles } from '@/constants/Styles';
 import { colorPalette } from '@/constants/Colors';
 import LogoImage from '@/assets/images/logo/Logo_Isolated_2x.png';
-import BigTile from '@/components/BigTile';
-import { setMixAsNowPlaying } from '@/lib/audio-manager-utils';
 import db from '@/db/db';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { mixes as mixesTable } from '@/db/schema';
 import { useRouter } from 'expo-router';
 import SunsetSunriseMessage from '@/components/SunsetSunriseMessage';
 
-type SuggestedMix = {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  imageUrl: string;
-};
-
-const suggestedMixes: SuggestedMix[] = [
-  {
-    id: "669404a5-7af4-48c2-9e1c-f06bdc1c3e59",
-    title: 'Rain on the mountain',
-    category: 'Nature',
-    description: 'A mix of smooth noise',
-    imageUrl: `${process.env.EXPO_PUBLIC_S3_BASE_URL}images/northern_pacific_coast.jpg`
-  },
-  {
-    id: "669404a5-7af4-48c2-9e1c-f06bdc1c3e59",
-    title: 'Night by the Pacific Coast',
-    category: 'Nature',
-    description: 'A mix of smooth noise',
-    imageUrl: `${process.env.EXPO_PUBLIC_S3_BASE_URL}images/northern_pacific_coast.jpg`
-  },
-  {
-    id: "669404a5-7af4-48c2-9e1c-f06bdc1c3e59",
-    title: 'Camping thunderstorm',
-    category: 'Nature',
-    description: 'A mix of smooth noise',
-    imageUrl: `${process.env.EXPO_PUBLIC_S3_BASE_URL}images/northern_pacific_coast.jpg`
-  }
-];
-
 export default function HomeScreen() {
   const { data } = useLiveQuery(db.select().from(mixesTable));
   const mixes = data || [];
 
   const router = useRouter();
-
-  const playMix = useCallback((mixId: string) => {
-    const mixToPlay = mixes.find((mix) => mix.id === mixId);
-    if (mixToPlay) {
-      setMixAsNowPlaying(mixToPlay);
-      router.push('/now-playing-modal');
-    }
-  }, [mixes, router]);
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -92,18 +49,6 @@ export default function HomeScreen() {
             <ThemedText muted>Mixes with the soothing sounds of nature</ThemedText>
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[
-            uiStyles.mainContentPadding,
-            styles.tilesContainer,
-          ]}>
-            {suggestedMixes.map((mix) => (
-              <BigTile key={`${mix.id}-${mix.title}`} id={mix.id.toString()} title={mix.title} imageUrl={mix.imageUrl} style={{
-                marginRight: spacing.sm
-              }} onPress={() => {
-                playMix(mix.id);
-              }} />
-            ))}
-          </ScrollView>
         </View>
       </ScrollView>
     </SafeAreaView>
