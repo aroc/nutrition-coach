@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, scope } from '@adonisjs/lucid/orm'
 
-export default class Mix extends BaseModel {
+export default class LoggedFoodItem extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
