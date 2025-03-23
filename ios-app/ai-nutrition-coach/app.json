@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ai_nutrition_coach",
-    "slug": "ai_nutrition_coach",
+    "name": "ainutritioncoach",
+    "slug": "ainutritioncoach",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/AppIcon1x_1024x1024.png",
@@ -11,7 +11,7 @@
     "ios": {
       "usesAppleSignIn": true,
       "supportsTablet": true,
-      "bundleIdentifier": "co.optimismlabs.ai_nutrition_coach",
+      "bundleIdentifier": "co.optimismlabs.ainutritioncoach",
       "appleTeamId": "GFFUJNB8K5",
       "infoPlist": {
         "UIBackgroundModes": [
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.ai_nutrition_coach"
+      "package": "com.anonymous.ainutritioncoach"
     },
     "web": {
       "bundler": "metro",
