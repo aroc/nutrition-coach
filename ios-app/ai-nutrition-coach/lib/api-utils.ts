@@ -14,28 +14,34 @@ import {
   removeSecureData,
   clearAllSecureData,
 } from "./secure-data-utils";
+import { USER_WITH_TOKEN_KEY } from "@/constants/index";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 // const API_BASE_URL = "https://ainutritioncoach-production.up.railway.app";
 
 export const apiFetch = async (
   path: string,
-  options: RequestInit & { currentUser?: User | null } = {}
+  options: RequestInit & {
+    currentUser?: User | null;
+    attemptLogout?: boolean;
+  } = {}
 ) => {
   const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
   Logger.log("apiFetch", url, options);
 
+  const { currentUser, attemptLogout, ...restOptions } = options;
+
   const response = await fetch(url, {
-    ...options,
+    ...restOptions,
     headers: {
       "Content-Type": "application/json",
-      ...(options.currentUser
-        ? { Authorization: `Bearer ${options.currentUser.token.token}` }
+      ...(currentUser
+        ? { Authorization: `Bearer ${currentUser.token.token}` }
         : {}),
     },
   });
 
-  if (!response.ok && response.status === 401) {
+  if (!response.ok && response.status === 401 && attemptLogout) {
     // Auth token expired or invalid
     Logger.error("Authentication failed - please log in again");
     await logout();
@@ -271,8 +277,6 @@ export const submitSignup = async (email: string, password: string) => {
   }
 };
 
-const USER_WITH_TOKEN_KEY = "userWithtoken";
-
 export const setCurrentUser = async (user: User | null) => {
   const { setCurrentUserState } = useAppStore.getState();
 
@@ -305,7 +309,15 @@ export const getUser = async () => {
 };
 
 export const logout = async () => {
-  await logoutRequest();
+  const userWithToken = (await getSecureData(
+    USER_WITH_TOKEN_KEY
+  )) as User | null;
+
+  console.log("userWithToken", userWithToken);
+
+  if (userWithToken && userWithToken.token) {
+    await logoutRequest();
+  }
   await clearAllSecureData();
   setCurrentUser(null);
 };
@@ -316,6 +328,7 @@ export const logoutRequest = async () => {
   await apiFetch("/auth/logout", {
     method: "POST",
     currentUser,
+    attemptLogout: false,
   });
 };
 

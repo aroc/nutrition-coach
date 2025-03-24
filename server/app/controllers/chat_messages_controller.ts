@@ -11,11 +11,22 @@ export default class ChatMessagesController {
   async index({ auth }: HttpContext) {
     const user = auth.getUserOrFail()
 
-    const messages = await ChatMessage.query()
+    // get the last 10 messages between this user and the assistant
+    const mostRecentMessages = await ChatMessage.query()
       .withScopes((scopes) => scopes.notDeleted())
-      .where('user_id', user.id)
+      .where((query) => {
+        query
+          .where((subquery) => {
+            subquery.where('author_id', user.id).where('recipient_id', AI_ASSISTANT_USER_ID)
+          })
+          .orWhere((subquery) => {
+            subquery.where('author_id', AI_ASSISTANT_USER_ID).where('recipient_id', user.id)
+          })
+      })
+      .orderBy('created_at', 'desc')
+      .limit(40)
 
-    return messages
+    return mostRecentMessages
   }
 
   async store({ request, response, auth }: HttpContext) {

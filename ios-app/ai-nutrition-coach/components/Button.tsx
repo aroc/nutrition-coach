@@ -27,29 +27,29 @@ const Button: React.FC<ButtonProps> = ({
   const getBackgroundColor = () => {
     switch (variant) {
       case 'primary':
-        return '#064E3B'; // emerald-900
+        return colorPalette.emerald['900'];
       case 'white':
-        return '#E4E4E7'; // zinc-200
+        return colorPalette.zinc['200'];
       case 'dark':
-        return '#27272A'; // zinc-800
+        return colorPalette.zinc['800'];
       case 'secondary':
-        return '#27272A'; // zinc-800
+        return colorPalette.zinc['800'];
       case 'tertiary':
         return 'transparent';
       default:
-        return '#064E3B'; // emerald-900
+        return colorPalette.emerald['900'];
     }
   };
 
   const getTextColor = () => {
     switch (variant) {
       case 'white':
-        return '#18181B'; // zinc-900
+        return colorPalette.zinc['50'];
       case 'tertiary':
       case 'dark':
-        return '#E4E4E7'; // zinc-200
+        return colorPalette.zinc['800'];
       default:
-        return '#F4F4F5'; // zinc-100
+        return colorPalette.zinc['200'];
     }
   };
 

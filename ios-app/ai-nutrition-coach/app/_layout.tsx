@@ -41,16 +41,16 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!currentUser) {
-      getUser();
+      if (currentUserHasBeenFetched) {
+        router.replace('/');
+      } else {
+        getUser();
+      }
+    } else {
+      fetchUserGoals();
+      fetchLoggedFoodItems();
+      fetchChatMessages();
     }
-  }, [currentUser, getUser]);
-
-  useEffect(() => {
-    if (!currentUser) return;
-
-    fetchUserGoals();
-    fetchLoggedFoodItems();
-    fetchChatMessages();
   }, [currentUser]);
 
   const { success, error } = useMigrations(db, migrations);
