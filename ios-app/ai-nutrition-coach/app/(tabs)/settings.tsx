@@ -1,8 +1,8 @@
 import { StyleSheet, View, ScrollView, SafeAreaView, Alert, Linking, Text } from 'react-native';
 import { useCallback } from 'react';
 import { ThemedText } from '@/components/ThemedText';
-import { logout } from '@/lib/auth-utils';
-import { deleteAccount } from '@/lib/api-fetch';
+import { logout } from '@/lib/api-utils';
+import { deleteAccount } from '@/lib/api-utils';
 import { uiStyles } from '@/constants/Styles';
 import { User } from '@/types/index';
 import { useAppStore } from '@/state/store';

@@ -6,7 +6,7 @@ import { spacing, uiStyles } from '@/constants/Styles';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { useRouter } from 'expo-router';
-import { submitLogin, submitSignup } from '@/lib/api-fetch';
+import { submitLogin, submitSignup } from '@/lib/api-utils';
 import Logger from '@/lib/Logger';
 
 export default function AuthModal() {

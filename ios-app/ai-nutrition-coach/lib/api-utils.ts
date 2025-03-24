@@ -1,8 +1,6 @@
 import { User } from "@/types/index";
 import Logger from "./Logger";
 import { useAppStore } from "../state/store";
-import { logout, setCurrentUser } from "./auth-utils";
-import { apiFetch } from "./api-client";
 import db from "@/db/db";
 import {
   userGoals as userGoalsTable,
@@ -10,6 +8,41 @@ import {
   userChatMessages,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import {
+  getSecureData,
+  setSecureData,
+  removeSecureData,
+  clearAllSecureData,
+} from "./secure-data-utils";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+// const API_BASE_URL = "https://ainutritioncoach-production.up.railway.app";
+
+export const apiFetch = async (
+  path: string,
+  options: RequestInit & { currentUser?: User | null } = {}
+) => {
+  const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  Logger.log("apiFetch", url, options);
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.currentUser
+        ? { Authorization: `Bearer ${options.currentUser.token.token}` }
+        : {}),
+    },
+  });
+
+  if (!response.ok && response.status === 401) {
+    // Auth token expired or invalid
+    Logger.error("Authentication failed - please log in again");
+    await logout();
+  }
+
+  return response;
+};
 
 export const fetchUserGoals = async () => {
   const currentUser = useAppStore.getState().currentUser;
@@ -236,6 +269,54 @@ export const submitSignup = async (email: string, password: string) => {
 
     throw new Error(message);
   }
+};
+
+const USER_WITH_TOKEN_KEY = "userWithtoken";
+
+export const setCurrentUser = async (user: User | null) => {
+  const { setCurrentUserState } = useAppStore.getState();
+
+  try {
+    if (user) {
+      Logger.setCurrentUser(user);
+      Logger.log("setting current user", user);
+      setCurrentUserState(user);
+      await setSecureData(USER_WITH_TOKEN_KEY, user);
+      useAppStore.getState().setCurrentUserHasBeenFetched(true);
+    } else {
+      setCurrentUserState(null);
+      await removeSecureData(USER_WITH_TOKEN_KEY);
+    }
+  } catch (e) {
+    Logger.error("failed to set secure data", e);
+  }
+};
+
+export const getUser = async () => {
+  const userWithToken = (await getSecureData(
+    USER_WITH_TOKEN_KEY
+  )) as User | null;
+
+  if (userWithToken) {
+    useAppStore.getState().setCurrentUserState(userWithToken);
+  }
+
+  useAppStore.getState().setCurrentUserHasBeenFetched(true);
+};
+
+export const logout = async () => {
+  await logoutRequest();
+  await clearAllSecureData();
+  setCurrentUser(null);
+};
+
+export const logoutRequest = async () => {
+  const { currentUser } = useAppStore.getState();
+
+  await apiFetch("/auth/logout", {
+    method: "POST",
+    currentUser,
+  });
 };
 
 // export const verifyAppleLoginResp = async (appleLoginResponse: AppleLoginResponse) => {
