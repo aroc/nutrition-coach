@@ -43,8 +43,9 @@ export const userGoals = sqliteTable("user_goals", {
 
 export const userChatMessages = sqliteTable("user_chat_messages", {
   id,
-  userId: text("user_id"),
+  authorId: text("author_id"),
+  recipientId: text("recipient_id"),
   message: text("message").notNull(),
-  isAssistant: integer("is_assistant", { mode: "boolean" }).default(false),
+  messageAction: text("message_action"), // this is json
   ...timestamps,
 });

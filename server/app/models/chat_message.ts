@@ -6,10 +6,16 @@ export default class ChatMessage extends BaseModel {
   declare id: string
 
   @column()
-  declare userId: string
+  declare authorId: string
+
+  @column()
+  declare recipientId: string
 
   @column()
   declare message: string
+
+  @column()
+  declare messageAction: object
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

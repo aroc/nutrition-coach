@@ -3,7 +3,7 @@ import { BaseSchema } from '@adonisjs/lucid/schema'
 export default class extends BaseSchema {
   async up() {
     this.schema.createTable('logged_food_items', (table) => {
-      table.increments('id')
+      table.uuid('id').primary().notNullable().defaultTo(this.raw('uuid_generate_v4()'))
       table.string('user_id')
       table.string('description').nullable()
       table.integer('calories').nullable()
@@ -22,7 +22,7 @@ export default class extends BaseSchema {
     })
 
     this.schema.createTable('user_goals', (table) => {
-      table.increments('id')
+      table.uuid('id').primary().notNullable().defaultTo(this.raw('uuid_generate_v4()'))
       table.string('user_id')
       table.string('description').nullable()
       table.integer('calories').nullable()
@@ -41,11 +41,12 @@ export default class extends BaseSchema {
     })
 
     this.schema.createTable('chat_messages', (table) => {
-      table.increments('id')
-      table.string('user_id').nullable()
-      table.boolean('is_assistant').defaultTo(false)
-      table.string('message')
+      table.uuid('id').primary().notNullable().defaultTo(this.raw('uuid_generate_v4()'))
 
+      table.uuid('author_id').nullable()
+      table.uuid('recipient_id').nullable()
+      table.string('message')
+      table.jsonb('message_action')
       table.timestamp('created_at')
       table.timestamp('updated_at')
       table.timestamp('deleted_at')

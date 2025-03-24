@@ -2,9 +2,10 @@ import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import ChatMessage from '#models/chat_message'
 import { generateObject } from 'ai'
-import { z } from 'zod'
 import { openai } from '@ai-sdk/openai'
-import env from '#start/env'
+import aiChatMessageSchema from '#lib/ai_chat_message_schema'
+import { systemPrompt } from '#lib/ai_system_prompt'
+import { AI_ASSISTANT_USER_ID } from '#constants/index'
 
 export default class ChatMessagesController {
   async index({ auth }: HttpContext) {
@@ -17,36 +18,62 @@ export default class ChatMessagesController {
     return messages
   }
 
-  async store({ request, auth }: HttpContext) {
+  async store({ request, response, auth }: HttpContext) {
     const user = auth.getUserOrFail()
 
-    const message = await ChatMessage.create({
-      userId: user.id,
-      message: request.input('message'),
+    const message = request.input('message', '')
+    if (message.length > 500) {
+      return response.status(400).json({
+        error: 'Message must be 500 characters or less',
+      })
+    }
+
+    await ChatMessage.create({
+      authorId: user.id,
+      recipientId: AI_ASSISTANT_USER_ID,
+      message,
     })
 
+    // get the last 10 messages between this user and the assistant
+    const mostRecentMessages = await ChatMessage.query()
+      .withScopes((scopes) => scopes.notDeleted())
+      .where((query) => {
+        query
+          .where((subquery) => {
+            subquery.where('author_id', user.id).where('recipient_id', AI_ASSISTANT_USER_ID)
+          })
+          .orWhere((subquery) => {
+            subquery.where('author_id', AI_ASSISTANT_USER_ID).where('recipient_id', user.id)
+          })
+      })
+      .orderBy('created_at', 'desc')
+      .limit(10)
+
+    // Now create a well formatted string of the last 10 messages
+    // with user: message, and assistant: message, and the dates
+
+    const formattedMessages = mostRecentMessages
+      .map((message) => {
+        return `${message.authorId === user.id ? 'user' : 'assistant'}: ${message.message} (${message.createdAt.toFormat('yyyy-MM-dd HH:mm:ss')})`
+      })
+      .join('\n')
+
     // Now use that message and the last 5 messages in the context to make a request to the AI
-    // const userPrompt = request.input('user_prompt', '').slice(0, 500)
+    const { object } = await generateObject({
+      model: openai('gpt-4o'),
+      schema: aiChatMessageSchema,
+      prompt: systemPrompt + formattedMessages,
+    })
 
-    // const prompt = `Return an array of all the audio files that would make sense to include in a mix to satisfy the user's prompt. Also include a volume value between 0 and 1. Unless you feel there's value to changing the volume level, just leave the volume at 1.0. The audio files are described by their user_prompt property. Use the reply property to describe your work very concisely. If you can't find a good matching file for something requested in the user's prompt, please acknowledge that and let the user know in the reply. Also add a string entry to the missing_audio_files property for any the audio file that the user requested but you couldn't find. When crafting your reply, don't use technical language, use language that would make sense for an end user to understand. The audio files you can pick from are: ${JSON.stringify(systemFiles)}. The user's prompt is: ${userPrompt}`
+    // Save the response to the database
+    await ChatMessage.create({
+      authorId: AI_ASSISTANT_USER_ID,
+      recipientId: user.id,
+      message: object.message,
+      messageAction: object.action ?? null,
+    })
 
-    // const { object } = await generateObject({
-    //   model: openai('gpt-4o'),
-    //   schema: z.object({
-    //     audio_files: z.array(
-    //       z.object({
-    //         id: z.string(),
-    //         file_name: z.string(),
-    //         volume: z.number(),
-    //       })
-    //     ),
-    //     reply: z.string(),
-    //     missing_audio_files: z.array(z.string()),
-    //   }),
-    //   prompt,
-    // })
-
-    return message
+    return object
   }
 
   async update({ request, response, auth }: HttpContext) {

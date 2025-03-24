@@ -15,6 +15,13 @@
       "when": 1742751774056,
       "tag": "0001_complete_la_nuit",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1742780689962,
+      "tag": "0002_slow_shiva",
+      "breakpoints": true
     }
   ]
 }
